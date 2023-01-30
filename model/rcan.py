@@ -7,7 +7,7 @@ sys.setrecursionlimit(10000)
 
 
 def sub_pixel_conv2d(scale=2, **kwargs):
-    return Lambda(lambda x: tf.depth_to_space(x, scale), **kwargs)
+    return Lambda(lambda x: tf.nn.depth_to_space(x, scale), **kwargs)
 
 
 def upsample(input_tensor, filters):
@@ -51,7 +51,8 @@ def rg(input_tensor, filters, n_rcab=20):
 def rir(input_tensor, filters, n_rg=10):
     x = input_tensor
     for _ in range(n_rg):
-        x = rg(x, filters=filters)
+        # x = rg(x, filters=filters, n_rcab=20)
+        x = rg(x, filters=filters, n_rcab=10)
     x = Conv2D(filters=filters, kernel_size=3, strides=1, padding='same')(x)
     x = Add()([x, input_tensor])
 
@@ -62,7 +63,8 @@ def generator(filters=64, n_sub_block=2):
     inputs = Input(shape=(None, None, 3))
 
     x = x_1 = Conv2D(filters=filters, kernel_size=3, strides=1, padding='same')(inputs)
-    x = rir(x, filters=filters)
+    # x = rir(x, filters=filters)
+    x = rir(x, filters=filters, n_rg=1)
     x = Conv2D(filters=filters, kernel_size=3, strides=1, padding='same')(x)
     x = Add()([x_1, x])
 

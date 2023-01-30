@@ -21,11 +21,11 @@ def un_normalize(hr, sr):
 
 
 def psnr(hr, sr):
-    hr, sr = un_normalize(hr, sr)
-    hr = rgb_to_y(hr)
-    sr = rgb_to_y(sr)
-    hr = crop(hr)
-    sr = crop(sr)
+    # hr, sr = un_normalize(hr, sr)
+    # hr = rgb_to_y(hr)
+    # sr = rgb_to_y(sr)
+    # hr = crop(hr)
+    # sr = crop(sr)
     return tf.image.psnr(hr, sr, max_val=1.0)
 
 

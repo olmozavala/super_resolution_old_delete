@@ -11,7 +11,8 @@ def get_generator(model_arc, is_train=True):
     elif model_arc == 'edsr':
         model = edsr.generator()
     elif model_arc == 'rcan':
-        model = rcan.generator()
+        # model = rcan.generator()
+        model = rcan.generator(filters=16)
     elif model_arc == 'erca':
         model = erca.generator()
     elif model_arc == 'gan':

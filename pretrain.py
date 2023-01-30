@@ -3,10 +3,12 @@ import time
 import datetime
 import argparse
 
+import tensorflow as tf
 from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import backend as K
 from tensorflow.keras.losses import mean_squared_error, mean_absolute_error
+from tensorflow.keras.utils import plot_model
 
 import data
 from model import get_generator
@@ -15,7 +17,6 @@ from utils import save_params, num_iter_per_epoch
 from callbacks import make_tb_callback, make_lr_callback, make_cp_callback
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 
 def load_model(model, path):
     if path is not None:
@@ -41,7 +42,7 @@ def make_exp_folder(exp_dir, model_name):
 
 def adaptive_batch_size(n_gpus):
     if n_gpus < 3:
-        batch_size = 16
+        batch_size = 1
     else:
         batch_size = 32
     return batch_size
@@ -56,7 +57,10 @@ def prepare_model(**params):
     else:
         loss = mean_absolute_error
 
+    # Here I could print th emodel
     model = load_model(model, params['resume'])
+    plot_model(model, to_file="/home/olmozavala/Dropbox/MyProjects/EOAS/COAPS/Keras-Image-Super-Resolution/exp/model.png",
+               show_shapes=True, dpi=600)
     gpu_model = make_gpu_model(model, params['n_gpus'])
     optimizer = Adam(lr=params['lr_init'])
     gpu_model.compile(optimizer=optimizer, loss=loss, metrics=[psnr])
@@ -68,24 +72,25 @@ def train(**params):
     print("** Loading training images")
     start = time.time()
     lr_hr_ds, n_data = data.load_train_dataset(params['lr_dir'], params['hr_dir'], params['ext'], params['batch_size'])
-    val_lr_hr_ds, n_val_data = data.load_test_dataset(params['val_lr_dir'], params['val_hr_dir'], params['val_ext'],
-                                                      params['val_batch_size'])
+    val_lr_hr_ds, n_val_data = data.load_test_dataset(params['val_lr_dir'], params['val_hr_dir'], params['val_ext'], params['val_batch_size'])
     print("Finish loading images in %.2fs" % (time.time() - start))
 
     one_gpu_model, gpu_model = prepare_model(**params)
 
     exp_folder = make_exp_folder(params['exp_dir'], params['arc'])
     save_params(exp_folder, **params)
-    tb_callback = make_tb_callback(exp_folder)
-    lr_callback = make_lr_callback(params['lr_init'], params['lr_decay'], params['lr_decay_at_steps'])
-    cp_callback = make_cp_callback(exp_folder, one_gpu_model)
+    tb_callback = make_tb_callback(exp_folder) # Adds tensorboard log
+    lr_callback = make_lr_callback(params['lr_init'], params['lr_decay'], params['lr_decay_at_steps']) # Adds lr decay function
+    cp_callback = make_cp_callback(exp_folder, one_gpu_model) # Adds a TB checkpoint callback
 
     gpu_model.fit(lr_hr_ds, epochs=params['epochs'],
                   steps_per_epoch=num_iter_per_epoch(n_data, params['batch_size']),
+                  # steps_per_epoch=1000,
                   callbacks=[tb_callback, cp_callback, lr_callback],
                   initial_epoch=params['init_epoch'],
                   validation_data=val_lr_hr_ds,
                   validation_steps=n_val_data)
+                  # validation_steps=100)
 
     one_gpu_model.save_weights(os.path.join(exp_folder, 'final_model.h5'))
 
@@ -112,6 +117,7 @@ def main():
         print('Training without gpu. It is recommended using at least one gpu.')
         n_gpus = 0
         batch_size = 8
+    batch_size = 1
 
     params = {
         'arc': args.arc,
@@ -144,6 +150,10 @@ def main():
 
 
 if __name__ == '__main__':
+    # https://github.com/hieubkset/Keras-Image-Super-Resolution
     main()
 
-# python pretrain.py --arc=erca --train=../SRFeat/data/train/DIV2K --train-ext=.png --valid=../SRFeat/data/test/Set5 --valid-ext=.png --resume=exp/erca-06-24-21\:05/cp-0014.h5 --init_epoch=14 --cuda=1
+# --arc=rcan --train=/data/DARPA/SuperResolution/DataImgs/Train --train-ext=.png --valid=/data/DARPA/SuperResolution/DataImgs/Validation --valid-ext=.png --cuda=0
+# python pretrain.py --arc=erca --train=../SRFeat/data/train/DIV2K --train-ext=.png --valid=../SRFeat/data/test/Set5 --valid-ext=.png --resume=exp/erca-06-24-21\:05/cp-0014.h5 --init_epoch=14 --cuda=0
+# Used:
+# --arc=rcan --train=/data/DARPA/SuperResolution/DataImgs/Train --train-ext=.png --valid=/data/DARPA/SuperResolution/DataImgs/Validation --valid-ext=.png --cuda=1

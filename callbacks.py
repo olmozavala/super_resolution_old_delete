@@ -53,6 +53,6 @@ def make_cp_callback(checkpoint_dir, model):
 
     checkpoint_path = os.path.join(checkpoint_dir, "cp-{epoch:04d}.h5")
 
-    cp_callback = AltModelCheckpoint(checkpoint_path, model, save_weights_only=True, save_best_only=False, period=1)
+    cp_callback = AltModelCheckpoint(checkpoint_path, model, save_weights_only=True, save_best_only=False, save_freq=1)
 
     return cp_callback
