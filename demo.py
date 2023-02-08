@@ -12,7 +12,7 @@ import utils
 
 from Generators import generateXY, generateX_202105, generateXYNewPred
 import cmocean
-from img_viz.eoa_viz import EOAImageVisualizer
+# from img_viz.eoa_viz import EOAImageVisualizer
 import cv2
 import numpy as np
 import xarray as xr
@@ -123,30 +123,30 @@ def sr_from_path(model, lr_path, save_dir):
         st_lon= np.random.randint(0,800,1)[0]
         red = [st_lat,st_lat+200, st_lon, st_lon+200]
         disp_images = True
-        img_viz_ob = EOAImageVisualizer(output_folder=F"{save_dir}Imgs/RCAN", disp_images=disp_images,
-                                        mincbar=[minval, minval, minval, minval, minval,minval],
-                                        maxcbar=[maxval, maxval, maxval, maxval, maxval, maxval])
-        img_viz_ob.plot_2d_data_np_raw([u_cubic[red[0]:red[1],red[2]:red[3]], u[red[0]:red[1],red[2]:red[3]], u_nn[red[0]:red[1],red[2]:red[3]],
-                                        v_cubic[red[0]:red[1],red[2]:red[3]], v[red[0]:red[1],red[2]:red[3]], v_nn[red[0]:red[1],red[2]:red[3]]],
-                                       title=F"RMSE: {rmse:0.3f}",
-                                       var_names=[F'U1/12 {X.shape}', F'U1/50 {u.shape}', F'UNN {u_nn.shape}',
-                                                  F'V1/12 {X.shape}', F'V1/50 {v.shape}', F'VNN {v_nn.shape}'],
-                                       file_name=F"OUTPUT_{name}",
-                                       cmap=cmocean.cm.delta, cols_per_row=3)
+        # img_viz_ob = EOAImageVisualizer(output_folder=F"{save_dir}Imgs/RCAN", disp_images=disp_images,
+        #                                 mincbar=[minval, minval, minval, minval, minval,minval],
+        #                                 maxcbar=[maxval, maxval, maxval, maxval, maxval, maxval])
+        # img_viz_ob.plot_2d_data_np_raw([u_cubic[red[0]:red[1],red[2]:red[3]], u[red[0]:red[1],red[2]:red[3]], u_nn[red[0]:red[1],red[2]:red[3]],
+        #                                 v_cubic[red[0]:red[1],red[2]:red[3]], v[red[0]:red[1],red[2]:red[3]], v_nn[red[0]:red[1],red[2]:red[3]]],
+        #                                title=F"RMSE: {rmse:0.3f}",
+        #                                var_names=[F'U1/12 {X.shape}', F'U1/50 {u.shape}', F'UNN {u_nn.shape}',
+        #                                           F'V1/12 {X.shape}', F'V1/50 {v.shape}', F'VNN {v_nn.shape}'],
+        #                                file_name=F"OUTPUT_{name}",
+        #                                cmap=cmocean.cm.delta, cols_per_row=3)
 
 
-        minval = -.1
-        maxval = .1
-        img_viz_ob = EOAImageVisualizer(output_folder=F"{save_dir}Imgs/RCAN", disp_images=disp_images,
-                                        mincbar=[minval, minval, minval, minval, minval,minval],
-                                        maxcbar=[maxval, maxval, maxval, maxval, maxval, maxval])
-        img_viz_ob.plot_2d_data_np_raw([u_diff[red[0]:red[1],red[2]:red[3]],  u_diff_nn[red[0]:red[1],red[2]:red[3]],
-                                        v_diff[red[0]:red[1],red[2]:red[3]],  v_diff_nn[red[0]:red[1],red[2]:red[3]]],
-                                       title=F"RMSE: {rmse:0.3f}",
-                                       var_names=[F'U1/12 MAE {np.nanmean(np.abs(u_diff)):0.3f}', F'UNN MAE {np.nanmean(np.abs(u_diff_nn)):0.3f}',
-                                                  F'V1/12 MAE {np.nanmean(np.abs(v_diff)):0.3f}', F'VNN MAE {np.nanmean(np.abs(v_diff_nn)):0.3f}'],
-                                       file_name=F"DIFF_{name}",
-                                       cmap=cmocean.cm.diff, cols_per_row=2)
+        # minval = -.1
+        # maxval = .1
+        # img_viz_ob = EOAImageVisualizer(output_folder=F"{save_dir}Imgs/RCAN", disp_images=disp_images,
+        #                                 mincbar=[minval, minval, minval, minval, minval,minval],
+        #                                 maxcbar=[maxval, maxval, maxval, maxval, maxval, maxval])
+        # img_viz_ob.plot_2d_data_np_raw([u_diff[red[0]:red[1],red[2]:red[3]],  u_diff_nn[red[0]:red[1],red[2]:red[3]],
+        #                                 v_diff[red[0]:red[1],red[2]:red[3]],  v_diff_nn[red[0]:red[1],red[2]:red[3]]],
+        #                                title=F"RMSE: {rmse:0.3f}",
+        #                                var_names=[F'U1/12 MAE {np.nanmean(np.abs(u_diff)):0.3f}', F'UNN MAE {np.nanmean(np.abs(u_diff_nn)):0.3f}',
+        #                                           F'V1/12 MAE {np.nanmean(np.abs(v_diff)):0.3f}', F'VNN MAE {np.nanmean(np.abs(v_diff_nn)):0.3f}'],
+        #                                file_name=F"DIFF_{name}",
+        #                                cmap=cmocean.cm.diff, cols_per_row=2)
 
     if save_netcdf:
         ds = xr.load_dataset(lr_path)
@@ -218,7 +218,7 @@ def main():
     model = get_generator(args.arc, is_train=False)
     print("** Loading model at: " + args.model_path)
     model.load_weights(args.model_path)
-    plot_model(model, to_file="/data/DARPA/SuperResolution/PredictionsImgs/RCAN/model.png", show_shapes=True, dpi=600)
+    plot_model(model, to_file="/home/olmozavala/Delete/super_resolution_old_delete/model.png", show_shapes=True, dpi=600)
 
     if args.default:
         lr_dirs = [os.path.join("./data/test/", dataset, "LR") for dataset in ["Set5", "Set14", "BSDS100"]]
@@ -236,6 +236,7 @@ if __name__ == '__main__':
 
 #  OZ params
 # Real training
+# --arc=rcan --lr_dir=/nexsan/people/xbxu/HYCOM/ATLc0.02/E026surf_STNA --ext=.nc --save_dir=/data/DARPA/SuperResolution/Predictions --model_path=/home/olmozavala/Delete/super_resolution_old_delete/exp/rcan-11-01-14:03_Respaldo/cp-0002.h5 --cuda=0
 # --arc=rcan --lr_dir=/nexsan/people/xbxu/HYCOM/ATLc0.02/E026surf_STNA --ext=.nc --save_dir=/data/DARPA/SuperResolution/Predictions --model_path=/home/olmozavala/Dropbox/MyProjects/EOAS/COAPS/Keras-Image-Super-Resolution/exp/rcan-10-26-11:25/cp-0002.h5 --cuda=0
 # --arc=rcan --lr_dir=/nexsan/people/xbxu/HYCOM/ATLc0.02/E026surf_STNA --ext=.nc --save_dir=/data/DARPA/SuperResolution/Predictions --model_path=/home/olmozavala/Dropbox/MyProjects/EOAS/COAPS/Keras-Image-Super-Resolution/exp/rcan-10-26-11:25/cp-0002.h5 --cuda=0
 # Cropped one

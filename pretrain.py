@@ -4,7 +4,7 @@ import datetime
 import argparse
 
 import tensorflow as tf
-from tensorflow.keras.utils import multi_gpu_model
+# from tensorflow.keras.utils import multi_gpu_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import backend as K
 from tensorflow.keras.losses import mean_squared_error, mean_absolute_error
@@ -25,12 +25,12 @@ def load_model(model, path):
     return model
 
 
-def make_gpu_model(model, n_gpus):
-    if n_gpus > 1:
-        gpu_model = multi_gpu_model(model, gpus=n_gpus)
-    else:
-        gpu_model = model
-    return gpu_model
+# def make_gpu_model(model, n_gpus):
+#     if n_gpus > 1:
+#         gpu_model = multi_gpu_model(model, gpus=n_gpus)
+#     else:
+#         gpu_model = model
+#     return gpu_model
 
 
 def make_exp_folder(exp_dir, model_name):
@@ -61,7 +61,8 @@ def prepare_model(**params):
     model = load_model(model, params['resume'])
     plot_model(model, to_file="/home/olmozavala/Dropbox/MyProjects/EOAS/COAPS/Keras-Image-Super-Resolution/exp/model.png",
                show_shapes=True, dpi=600)
-    gpu_model = make_gpu_model(model, params['n_gpus'])
+    # gpu_model = make_gpu_model(model, params['n_gpus'])
+    gpu_model = model
     optimizer = Adam(lr=params['lr_init'])
     gpu_model.compile(optimizer=optimizer, loss=loss, metrics=[psnr])
 
@@ -153,7 +154,7 @@ if __name__ == '__main__':
     # https://github.com/hieubkset/Keras-Image-Super-Resolution
     main()
 
-# --arc=rcan --train=/data/DARPA/SuperResolution/DataImgs/Train --train-ext=.png --valid=/data/DARPA/SuperResolution/DataImgs/Validation --valid-ext=.png --cuda=0
+# --arc=rcan --train=/data/DARPA/SuperResolution/DataImgs/Train --train-ext=.png --valid=/data/DARPA/SuperResolution/DataImgs/Validation --valid-ext=.png --cuda=1
 # python pretrain.py --arc=erca --train=../SRFeat/data/train/DIV2K --train-ext=.png --valid=../SRFeat/data/test/Set5 --valid-ext=.png --resume=exp/erca-06-24-21\:05/cp-0014.h5 --init_epoch=14 --cuda=0
 # Used:
 # --arc=rcan --train=/data/DARPA/SuperResolution/DataImgs/Train --train-ext=.png --valid=/data/DARPA/SuperResolution/DataImgs/Validation --valid-ext=.png --cuda=1

@@ -52,25 +52,28 @@ def get_dataset(lr_path, hr_path, ext, idxs):
 
 
 def load_train_dataset(lr_path, hr_path, ext, batch_size):
-    # lr_hr_ds, n_data = get_dataset(lr_path, hr_path, ext)
-    # lr_hr_ds = lr_hr_ds.batch(batch_size)
-    # lr_hr_ds = lr_hr_ds.repeat()
-    # lr_hr_ds = tf.compat.v1.data.make_one_shot_iterator(lr_hr_ds)
-    # idxs = np.arange(0,415)
-    idxs = np.arange(0,590) # This is for the newewst
+    idxs = np.arange(0,415)
     lr_hr_ds, n_data = get_dataset(lr_path, hr_path, ext, idxs)
     lr_hr_ds = lr_hr_ds.batch(batch_size)
-    n_data = 590
+    lr_hr_ds = lr_hr_ds.repeat()
+    lr_hr_ds = tf.compat.v1.data.make_one_shot_iterator(lr_hr_ds)
+    n_data = 1400
+
+    # idxs = np.arange(0,590) # This is for the newewst
+    # lr_hr_ds, n_data = get_dataset(lr_path, hr_path, ext, idxs)
+    # lr_hr_ds = lr_hr_ds.batch(batch_size)
+    # n_data = 590
     return lr_hr_ds, n_data
 
 
 def load_test_dataset(lr_path, hr_path, ext, batch_size):
-    # val_lr_hr_ds, val_n_data = get_dataset(lr_path, hr_path, ext)
-    # val_lr_hr_ds = val_lr_hr_ds.batch(batch_size)
-    # val_lr_hr_ds = val_lr_hr_ds.repeat()
-    # idxs = np.arange(415,461)
-    idxs = np.arange(590,614)
+    idxs = np.arange(0,184)
     val_lr_hr_ds, val_n_data = get_dataset(lr_path, hr_path, ext, idxs)
-    val_n_data = 24# how many for validation
     val_lr_hr_ds = val_lr_hr_ds.batch(batch_size)
+    val_lr_hr_ds = val_lr_hr_ds.repeat()
+
+    # idxs = np.arange(590,614)
+    # val_lr_hr_ds, val_n_data = get_dataset(lr_path, hr_path, ext, idxs)
+    # val_n_data = 24# how many for validation
+    # val_lr_hr_ds = val_lr_hr_ds.batch(batch_size)
     return val_lr_hr_ds, val_n_data
